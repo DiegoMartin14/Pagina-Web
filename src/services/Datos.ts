@@ -604,7 +604,7 @@ export function CrearAlertas(
       severity: "info",
       title: "Suciedad Excesiva",
       description:
-        "Los módulos están extremadamente sucios. Limpieza urgente necesaria para evitar daños.",
+        "Los módulos están extremadamente sucios. Se necesita limpieza urgente.",
       tiempo: avisos.Suciedad.Tiempo,  
     });
   }
@@ -613,9 +613,9 @@ export function CrearAlertas(
     alertas.push({
       id: "Corriente",
       severity: "fault",
-      title: "Corriente fuera de rango",
+      title: "Corriente elevada",
       description:
-        "La corriente medida se encuentra fuera de rango.",
+        "La corriente de trabajo supero a la de cortocircuito.",
       tiempo: avisos.Corriente.Tiempo,  
     });
   }
@@ -635,9 +635,9 @@ export function CrearAlertas(
     alertas.push({
       id: "Tension",
       severity: "fault",
-      title: "Tension fuera de rango",
+      title: "Posible circuito abierto",
       description:
-        "La tensión medida se encuentra fuera de los valores esperados.",
+        "La tensión se encuentra por encima de la de circuito abierto.",
       tiempo: avisos.Tension.Tiempo,
     });
   }
@@ -646,7 +646,7 @@ export function CrearAlertas(
     alertas.push({
       id: "Perdida_Totales_Porcentual",
       severity: "info",
-      title: "Pérdidas elevadas",
+      title: "Pérdidas Excesivas",
       description:
         "Las pérdidas globales del sistema son excesivas.",
       tiempo: avisos.Perdida_Totales_Porcentual.Tiempo,
@@ -697,7 +697,7 @@ export function CrearSugerencias(
   if (avisos.Perdida_Totales_Porcentual.Valor === 1 && avisos.Perdida_Totales_Porcentual.Reconocido) {
     sugerencias.push({
       id: "Perdida_Totales_Porcentual",
-      text: "Perdidas Excesivas",
+      text: "Perdidas Elevaladas",
       tiempo: avisos.Perdida_Totales_Porcentual.Tiempo,
     });
   }
@@ -753,7 +753,7 @@ export function CrearSugerencias(
     if (avisos.Inicio_Dia.Valor && avisos.Inicio_Dia.Reconocido) {
     sugerencias.push({
       id: "Inicio_Dia",
-      text: "Se ha detectado el inicio de la producción diaria.",
+      text: "Comenzo la produccion diaria.",
       tiempo: avisos.Inicio_Dia.Tiempo,
     });
   }
@@ -761,7 +761,7 @@ export function CrearSugerencias(
     if (avisos.Fin_Dia.Valor && avisos.Fin_Dia.Reconocido) {
     sugerencias.push({
       id: "Fin_Dia",
-      text: "La producción diaria ha finalizado.",
+      text: "Finalizo la produccion diaria.",
       tiempo: avisos.Fin_Dia.Tiempo,
     });
   }
@@ -811,8 +811,8 @@ export function CrearNotificaciones(
     notificaciones.push({
       id: "Temp",
       tipo: "alerta",
-      title: "Temperatura elevada",
-      message: "La temperatura del módulo supera el rango recomendado.",
+      title: "Temperatura Excesiva",
+      message: "Se registro un sobrecalentamiento en el modulo.",
       tiempo: avisos.Temp.Tiempo
     });
   }
@@ -823,7 +823,7 @@ export function CrearNotificaciones(
       id: "Suciedad",
       tipo: "alerta",
       title: "Suciedad Excesiva",
-      message: "Limpieza recomendada de módulos.",
+      message: "Limpieza urgente de los módulos.",
       tiempo: avisos.Suciedad.Tiempo
     });
   }
@@ -834,7 +834,7 @@ export function CrearNotificaciones(
       id: "Corriente",
       tipo: "alerta",
       title: "Corriente anormal",
-      message: "La corriente esta fuera de rango.",
+      message: "La corriente aumentó demasiado.",
       tiempo: avisos.Corriente.Tiempo
     });
   }
@@ -854,7 +854,7 @@ export function CrearNotificaciones(
       id: "Tension",
       tipo: "alerta",
       title: "Tensión anormal",
-      message: "La tensión esta fuera de rango",
+      message: "Tension proxima a la de circuito abierto.",
       tiempo: avisos.Tension.Tiempo
     });
   }
@@ -863,7 +863,7 @@ export function CrearNotificaciones(
     notificaciones.push({
       id: "Perdida_Totales_Porcentual",
       tipo: "alerta",
-      title: "Pérdidas elevadas",
+      title: "Pérdidas Excesivas",
       message: "Las pérdidas globales del sistema son excesivas.",
       tiempo: avisos.Perdida_Totales_Porcentual.Tiempo
     });
@@ -893,8 +893,8 @@ export function CrearNotificaciones(
     notificaciones.push({
       id: "Temp",
       tipo: "sugerencia",
-      title: "Temperatura Excesiva",
-      message: "La temperatura del módulo supera el rango recomendado.",
+      title: "Temperatura Elevada",
+      message: "La temperatura del módulo está aumentando.",
       tiempo: avisos.Temp.Tiempo
     });
   }
@@ -913,7 +913,7 @@ export function CrearNotificaciones(
     notificaciones.push({
       id: "Perdida_Totales_Porcentual",
       tipo: "sugerencia",
-      title: "Perdidas excesiva",
+      title: "Perdidas elevadas",
       message: "Pérdidas totales altas.",
       tiempo: avisos.Perdida_Totales_Porcentual.Tiempo
     });
@@ -974,7 +974,7 @@ export function CrearNotificaciones(
     notificaciones.push({
       id: "VidaUtil_Estimada",
       tipo: "sugerencia",
-      title: "Vida util terminando",
+      title: "Vida util finalizando",
       message: "El sistema se acerca al fin de su vida útil.",
       tiempo: avisos.VidaUtil_Estimada.Tiempo
     });
@@ -1005,7 +1005,7 @@ export function CrearNotificaciones(
       id: "Mejor_Dia",
       tipo: "sugerencia",
       title: "Nuevo Record",
-      message: "Nuevo récord diario de generación.",
+      message: "Se alcanzo un nuevo maximo de energia diaria.",
       tiempo: avisos.Mejor_Dia.Tiempo
     });
   }
@@ -1015,7 +1015,7 @@ export function CrearNotificaciones(
       id: "Energia_Final_Dia",
       tipo: "sugerencia",
       title: "Produccion Descendente",
-      message: "La produccion de los ultimos dias es descendente.",
+      message: "Se detecto una caida de la produccion en los ultimos dias.",
       tiempo: avisos.Energia_Final_Dia.Tiempo
     });
   }
