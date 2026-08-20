@@ -53,19 +53,19 @@ export default function Historico() {
     <div className="space-y-6">
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <KpiCard label="Energía en la semana" value={Variables.Energia_En_La_Sem} unit="kWh" icon={Battery} accent="yellow" />
-        <KpiCard label={etiquetaDinamica} value={Variables.Energia_Prom_Diario} unit="kWh" icon={CalendarDays} accent="cyan"  />
-        <KpiCard label="Mejor día" value={Variables.Mejor_Dia} unit="kWh" icon={Trophy} accent="green" />
+        <KpiCard label={etiquetaDinamica} value={Variables.Energia_Prom_Diario} unit="Wh" icon={CalendarDays} accent="cyan"  />
+        <KpiCard label="Mejor día" value={Variables.Mejor_Dia} unit="Wh" icon={Trophy} accent="green" />
         <KpiCard label="Eficiencia en la semana" value={Variables.Eficiencia_En_La_Sem} unit="%" icon={Activity} accent="blue" />
       </section>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-        <ChartCard title="Energía diaria" description="Generación de los últimos 14 días (kWh)">
+        <ChartCard title="Energía diaria" description="Generación de los últimos 14 días (Wh)">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={datos14Dias} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
               <CartesianGrid stroke="hsl(var(--border))" strokeDasharray="3 3" vertical={false} />
               <XAxis dataKey="DiaLabel" stroke="hsl(var(--muted-foreground))" fontSize={11} tickLine={false} axisLine={false} />
               <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={tooltipStyle} cursor={{fill: "hsl(var(--muted) / 0.4)"}} formatter={(value) => [`${value} kWh`,"Energía"]} labelFormatter={(label, payload) => {if (!payload?.length) return label; return `Fecha: ${payload[0].payload.FechaReal}`;}}/>  
+              <Tooltip contentStyle={tooltipStyle} cursor={{fill: "hsl(var(--muted) / 0.4)"}} formatter={(value) => [`${value} Wh`,"Energía"]} labelFormatter={(label, payload) => {if (!payload?.length) return label; return `Fecha: ${payload[0].payload.FechaReal}`;}}/>  
               <Bar dataKey="Energia_Final_Dia" fill="hsl(var(--chart-yellow))" radius={[6, 6, 0, 0]} maxBarSize={30} />
             </BarChart>
           </ResponsiveContainer>
@@ -85,7 +85,7 @@ export default function Historico() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-        <ChartCard title="Energia real vs esperada" description="Comparación entre la energia teórica y medida (kWh)">
+        <ChartCard title="Energia real vs esperada" description="Comparación entre la energia teórica y medida (Wh)">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={datos14Dias} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
               <CartesianGrid stroke="hsl(var(--border))" strokeDasharray="3 3" vertical={false} />

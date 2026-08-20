@@ -268,7 +268,7 @@ export default function Diagnostico() {
                   <p className="text-2xl md:text-6xl font-extrabold text-warning tabular-nums">
                     {UltimaPerdidas.Total_Kw}
                   </p>
-                  <p className="text-base md:text-lg font-semibold text-muted-foreground">kW</p>
+                  <p className="text-base md:text-lg font-semibold text-muted-foreground">W</p>
                 </div>
                 
                 <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning/10 mt-1">
@@ -496,7 +496,7 @@ export default function Diagnostico() {
           {/* Gráfico de Potencia */}
           <ChartCard
             title="Potencia generada según orientación"
-            description="Comparación entre la potencia medida y la potencia estimada para diferentes orientaciones del panel (Kw)"
+            description="Comparación entre la potencia medida y la potencia estimada para diferentes orientaciones del panel (W)"
           >
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
