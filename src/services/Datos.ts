@@ -252,7 +252,7 @@ export function useSistemaOffline() {
 
 
   const sistemaOffline =
-    ahora - ultimoCambio > 60000;
+    ahora - ultimoCambio > 900000;
 
 
 
@@ -269,7 +269,7 @@ export function useSistemaOffline() {
 
       localStorage.setItem(
         "fechaFalloSistema",
-        String(ultimoCambio + 60000)
+        String(ultimoCambio + 900000) // 15 minutos después del último cambio
       );
 
     }
