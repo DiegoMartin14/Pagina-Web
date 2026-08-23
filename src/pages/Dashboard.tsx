@@ -68,7 +68,7 @@ export default function Dashboard() {
           icon={ShieldCheck}
           accent={estadoActual === "Activo" ? "green" : "orange" }
           hint={estadoActual === "Activo" ? "Sistema funcionando correctamente" : "El sistema no funciona\n(Revisar Alertas)"} /> 
-        <KpiCard label="Energía hoy" value={Variables.Energia_Actual_Dia.toFixed(1)} unit="Wh" icon={Battery} accent="cyan" trend={Variables.Tendencia_Energia} hint={PasoOcaso(Variables.Ocaso) ? `Energía generada hoy: ${Variables.Energia_Final_Dia} kWh` : undefined} />
+        <KpiCard label="Energía hoy" value={Variables.Energia_Actual_Dia.toFixed(1)} unit="Wh" icon={Battery} accent="cyan" trend={Variables.Tendencia_Energia} hint={PasoOcaso(Variables.Ocaso) ? `Energía generada hoy: ${Variables.Energia_Final_Dia} Wh` : undefined} />
 
         <GaugeKpiCard
           label="Tensión actual"
