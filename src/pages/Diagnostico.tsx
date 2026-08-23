@@ -268,7 +268,7 @@ export default function Diagnostico() {
                   <p className="text-2xl md:text-6xl font-extrabold text-warning tabular-nums">
                     {UltimaPerdidas.Total_Kw}
                   </p>
-                  <p className="text-base md:text-lg font-semibold text-muted-foreground">W</p>
+                  <p className="text-base md:text-lg font-semibold text-muted-foreground">Wh</p>
                 </div>
                 
                 <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning/10 mt-1">
