@@ -175,6 +175,44 @@ export type Avisos = {
 
 ////////////////GENERALES///////////////////
 
+function convertirTiempoAMilisegundos(
+  valor: string
+): number {
+
+  let milisegundos = 0;
+
+  const horas = valor.match(/(\d+)h/);
+  const minutos = valor.match(/(\d+)m/);
+  const segundos = valor.match(/(\d+)s/);
+
+
+  if (horas) {
+    milisegundos +=
+      Number(horas[1]) *
+      60 *
+      60 *
+      1000;
+  }
+
+
+  if (minutos) {
+    milisegundos +=
+      Number(minutos[1]) *
+      60 *
+      1000;
+  }
+
+
+  if (segundos) {
+    milisegundos +=
+      Number(segundos[1]) *
+      1000;
+  }
+
+
+  return milisegundos;
+}
+
 export function useSistemaOffline() {
 
   const { Variables } = useVariables();
@@ -183,22 +221,24 @@ export function useSistemaOffline() {
 
   const inicializadoRef = useRef(false);
 
-  const [ultimoCambio, setUltimoCambio] = useState(() => {
+  const [ultimoCambio, setUltimoCambio] = useState<number | null>(
+    () => {
+      const guardado =
+        localStorage.getItem("ultimoCambioSistema");
 
-    const guardado =
-      localStorage.getItem("ultimoCambioSistema");
-
-    return guardado
-      ? Number(guardado)
-      : Date.now();
-
-  });
+      return guardado
+        ? Number(guardado)
+        : null;
+    }
+  );
 
   const [ahora, setAhora] = useState(Date.now());
 
 
+  // ==========================================
+  // Reloj
+  // ==========================================
 
-  // Actualizar reloj cada segundo
   useEffect(() => {
 
     const interval = setInterval(() => {
@@ -210,8 +250,10 @@ export function useSistemaOffline() {
   }, []);
 
 
+  // ==========================================
+  // Detectar estado de la unidad central
+  // ==========================================
 
-  // Detectar nuevos envíos de la unidad central
   useEffect(() => {
 
     const valorActual =
@@ -219,24 +261,52 @@ export function useSistemaOffline() {
 
     if (!valorActual) return;
 
-    // Primera carga de datos:
-    // NO actualizar ultimoCambio porque podría venir restaurado
-    // desde localStorage.
+
+    // ------------------------------------------
+    // Primera carga
+    // ------------------------------------------
+
     if (!inicializadoRef.current) {
 
       ultimoValorRef.current = valorActual;
+
       inicializadoRef.current = true;
 
-      return;
 
+      // Obtener cuánto tiempo hace que llegó
+      // el último dato según Firebase
+      const tiempoTranscurrido =
+        convertirTiempoAMilisegundos(valorActual);
+
+
+      const timestampReal =
+        Date.now() - tiempoTranscurrido;
+
+
+      setUltimoCambio(timestampReal);
+
+      localStorage.setItem(
+        "ultimoCambioSistema",
+        String(timestampReal)
+      );
+
+      return;
     }
 
-    // Cambio real detectado
-    if (valorActual !== ultimoValorRef.current) {
 
-      ultimoValorRef.current = valorActual;
+    // ------------------------------------------
+    // Nuevo envío detectado
+    // ------------------------------------------
 
-      const timestamp = Date.now();
+    if (
+      valorActual !== ultimoValorRef.current
+    ) {
+
+      ultimoValorRef.current =
+        valorActual;
+
+      const timestamp =
+        Date.now();
 
       setUltimoCambio(timestamp);
 
@@ -247,33 +317,50 @@ export function useSistemaOffline() {
 
     }
 
-  }, [Variables?.Estado_Sistema?.Ultimo_Envio_Sensores]);
+  }, [
+    Variables?.Estado_Sistema?.Ultimo_Envio_Sensores
+  ]);
 
 
+  // ==========================================
+  // Determinar si está offline
+  // ==========================================
 
   const sistemaOffline =
+    ultimoCambio !== null &&
     ahora - ultimoCambio > 900000;
 
 
-
+  // ==========================================
   // Guardar momento exacto del fallo
+  // ==========================================
+
   useEffect(() => {
 
     const fechaGuardada =
-      localStorage.getItem("fechaFalloSistema");
+      localStorage.getItem(
+        "fechaFalloSistema"
+      );
+
 
     if (
       sistemaOffline &&
-      fechaGuardada === null
+      fechaGuardada === null &&
+      ultimoCambio !== null
     ) {
+
+      const fechaFallo =
+        ultimoCambio + 900000;
 
       localStorage.setItem(
         "fechaFalloSistema",
-        String(ultimoCambio + 900000) // 15 minutos después del último cambio
+        String(fechaFallo)
       );
 
     }
 
+
+    // Volvió a funcionar
     if (!sistemaOffline) {
 
       localStorage.removeItem(
@@ -282,9 +369,15 @@ export function useSistemaOffline() {
 
     }
 
-  }, [sistemaOffline, ultimoCambio]);
+  }, [
+    sistemaOffline,
+    ultimoCambio
+  ]);
 
 
+  // ==========================================
+  // Recuperar fecha del fallo
+  // ==========================================
 
   const fechaFalloSistema =
     Number(
@@ -294,13 +387,139 @@ export function useSistemaOffline() {
     ) || null;
 
 
-
   return {
     sistemaOffline,
     fechaFalloSistema,
     ultimoCambio,
   };
 }
+
+// export function useSistemaOffline() {
+
+//   const { Variables } = useVariables();
+
+//   const ultimoValorRef = useRef<string | undefined>(undefined);
+
+//   const inicializadoRef = useRef(false);
+
+//   const [ultimoCambio, setUltimoCambio] = useState(() => {
+
+//     const guardado =
+//       localStorage.getItem("ultimoCambioSistema");
+
+//     return guardado
+//       ? Number(guardado)
+//       : Date.now();
+
+//   });
+
+//   const [ahora, setAhora] = useState(Date.now());
+
+
+
+//   // Actualizar reloj cada segundo
+//   useEffect(() => {
+
+//     const interval = setInterval(() => {
+//       setAhora(Date.now());
+//     }, 1000);
+
+//     return () => clearInterval(interval);
+
+//   }, []);
+
+
+
+//   // Detectar nuevos envíos de la unidad central
+//   useEffect(() => {
+
+//     const valorActual =
+//       Variables?.Estado_Sistema?.Ultimo_Envio_Sensores;
+
+//     if (!valorActual) return;
+
+//     // Primera carga de datos:
+//     // NO actualizar ultimoCambio porque podría venir restaurado
+//     // desde localStorage.
+//     if (!inicializadoRef.current) {
+
+//       ultimoValorRef.current = valorActual;
+//       inicializadoRef.current = true;
+
+//       return;
+
+//     }
+
+//     // Cambio real detectado
+//     if (valorActual !== ultimoValorRef.current) {
+
+//       ultimoValorRef.current = valorActual;
+
+//       const timestamp = Date.now();
+
+//       setUltimoCambio(timestamp);
+
+//       localStorage.setItem(
+//         "ultimoCambioSistema",
+//         String(timestamp)
+//       );
+
+//     }
+
+//   }, [Variables?.Estado_Sistema?.Ultimo_Envio_Sensores]);
+
+
+
+//   const sistemaOffline =
+//     ahora - ultimoCambio > 900000;
+
+
+
+//   // Guardar momento exacto del fallo
+//   useEffect(() => {
+
+//     const fechaGuardada =
+//       localStorage.getItem("fechaFalloSistema");
+
+//     if (
+//       sistemaOffline &&
+//       fechaGuardada === null
+//     ) {
+
+//       localStorage.setItem(
+//         "fechaFalloSistema",
+//         String(ultimoCambio + 900000) // 15 minutos después del último cambio
+//       );
+
+//     }
+
+//     if (!sistemaOffline) {
+
+//       localStorage.removeItem(
+//         "fechaFalloSistema"
+//       );
+
+//     }
+
+//   }, [sistemaOffline, ultimoCambio]);
+
+
+
+//   const fechaFalloSistema =
+//     Number(
+//       localStorage.getItem(
+//         "fechaFalloSistema"
+//       )
+//     ) || null;
+
+
+
+//   return {
+//     sistemaOffline,
+//     fechaFalloSistema,
+//     ultimoCambio,
+//   };
+// }
 
 export async function ObtenerAvisos() {
 
