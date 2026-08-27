@@ -328,7 +328,7 @@ export function useSistemaOffline() {
 
   const sistemaOffline =
     ultimoCambio !== null &&
-    ahora - ultimoCambio > 900000;
+    ahora - ultimoCambio > 60000;
 
 
   // ==========================================
@@ -350,7 +350,7 @@ export function useSistemaOffline() {
     ) {
 
       const fechaFallo =
-        ultimoCambio + 900000;
+        ultimoCambio + 60000;
 
       localStorage.setItem(
         "fechaFalloSistema",
