@@ -71,7 +71,7 @@ export default function Diagnostico() {
   const alertas = CrearAlertas(Avisos);
   const sugerencias = CrearSugerencias(Avisos);
 
-  const { sistemaOffline, ultimoCambio, fechaFalloSistema } = useSistemaOfflineContext();
+  const { sistemaOffline, fechaFalloSistema } = useSistemaOfflineContext();
 
   const alertasSistema =
     sistemaOffline && fechaFalloSistema

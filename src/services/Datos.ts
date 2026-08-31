@@ -58,6 +58,7 @@ export type Variable = {
     Tiempo_Programa: string,
     Ultimo_Envio_Sensores: string, 
     Ultimo_Envio_Firebase: string,  
+    Contador_Envio: number,
     Señal_WiFi: string,   
     Estado_WiFi: string, 
   }
@@ -175,70 +176,30 @@ export type Avisos = {
 
 ////////////////GENERALES///////////////////
 
-function convertirTiempoAMilisegundos(
-  valor: string
-): number {
-
-  let milisegundos = 0;
-
-  const horas = valor.match(/(\d+)h/);
-  const minutos = valor.match(/(\d+)m/);
-  const segundos = valor.match(/(\d+)s/);
-
-
-  if (horas) {
-    milisegundos +=
-      Number(horas[1]) *
-      60 *
-      60 *
-      1000;
-  }
-
-
-  if (minutos) {
-    milisegundos +=
-      Number(minutos[1]) *
-      60 *
-      1000;
-  }
-
-
-  if (segundos) {
-    milisegundos +=
-      Number(segundos[1]) *
-      1000;
-  }
-
-
-  return milisegundos;
-}
-
 export function useSistemaOffline() {
 
   const { Variables } = useVariables();
 
-  const ultimoValorRef = useRef<string | undefined>(undefined);
+  const ultimoContadorRef = useRef<number | undefined>(
+    undefined
+  );
 
-  const inicializadoRef = useRef(false);
+  const [ultimoHeartbeat, setUltimoHeartbeat] =
+    useState<number | null>(() => {
 
-  const [ultimoCambio, setUltimoCambio] = useState<number | null>(
-    () => {
       const guardado =
-        localStorage.getItem("ultimoCambioSistema");
+        localStorage.getItem("ultimoHeartbeat");
 
       return guardado
         ? Number(guardado)
         : null;
-    }
-  );
+    });
 
-  const [ahora, setAhora] = useState(Date.now());
+  const [ahora, setAhora] =
+    useState(Date.now());
 
 
-  // ==========================================
   // Reloj
-  // ==========================================
-
   useEffect(() => {
 
     const interval = setInterval(() => {
@@ -250,113 +211,82 @@ export function useSistemaOffline() {
   }, []);
 
 
-  // ==========================================
-  // Detectar estado de la unidad central
-  // ==========================================
-
+  // Detectar nuevo envío
   useEffect(() => {
 
-    const valorActual =
-      Variables?.Estado_Sistema?.Ultimo_Envio_Sensores;
+    const contador =
+      Variables?.Estado_Sistema?.Contador_Envio;
 
-    if (!valorActual) return;
-
-
-    // ------------------------------------------
-    // Primera carga
-    // ------------------------------------------
-
-    if (!inicializadoRef.current) {
-
-      ultimoValorRef.current = valorActual;
-
-      inicializadoRef.current = true;
+    if (contador === undefined) return;
 
 
-      // Obtener cuánto tiempo hace que llegó
-      // el último dato según Firebase
-      const tiempoTranscurrido =
-        convertirTiempoAMilisegundos(valorActual);
+    // Primera lectura
+    if (ultimoContadorRef.current === undefined) {
 
+      ultimoContadorRef.current =
+        contador;
 
-      const timestampReal =
-        Date.now() - tiempoTranscurrido;
+      const timestamp =
+        Date.now();
 
-
-      setUltimoCambio(timestampReal);
+      setUltimoHeartbeat(timestamp);
 
       localStorage.setItem(
-        "ultimoCambioSistema",
-        String(timestampReal)
+        "ultimoHeartbeat",
+        String(timestamp)
       );
 
       return;
     }
 
 
-    // ------------------------------------------
-    // Nuevo envío detectado
-    // ------------------------------------------
-
+    // Nuevo envío real
     if (
-      valorActual !== ultimoValorRef.current
+      contador !== ultimoContadorRef.current
     ) {
 
-      ultimoValorRef.current =
-        valorActual;
+      ultimoContadorRef.current =
+        contador;
 
       const timestamp =
         Date.now();
 
-      setUltimoCambio(timestamp);
+      setUltimoHeartbeat(timestamp);
 
       localStorage.setItem(
-        "ultimoCambioSistema",
+        "ultimoHeartbeat",
         String(timestamp)
       );
-
     }
 
   }, [
-    Variables?.Estado_Sistema?.Ultimo_Envio_Sensores
+    Variables?.Estado_Sistema?.Contador_Envio
   ]);
 
 
-  // ==========================================
-  // Determinar si está offline
-  // ==========================================
-
+  // Más de 60 segundos sin un nuevo envío
   const sistemaOffline =
-    ultimoCambio !== null &&
-    ahora - ultimoCambio > 60000; 
+    ultimoHeartbeat !== null &&
+    ahora - ultimoHeartbeat > 60000;
 
 
-  // ==========================================
-  // Guardar momento exacto del fallo
-  // ==========================================
-
+  // Registrar momento del fallo
   useEffect(() => {
-
-    const fechaGuardada =
-      localStorage.getItem(
-        "fechaFalloSistema"
-      );
-
 
     if (
       sistemaOffline &&
-      fechaGuardada === null &&
-      ultimoCambio !== null
+      !localStorage.getItem(
+        "fechaFalloSistema"
+      )
     ) {
 
       const fechaFallo =
-        ultimoCambio + 60000;
+        ultimoHeartbeat! + 60000;
 
       localStorage.setItem(
         "fechaFalloSistema",
         String(fechaFallo)
       );
-
     }
 
 
@@ -366,18 +296,13 @@ export function useSistemaOffline() {
       localStorage.removeItem(
         "fechaFalloSistema"
       );
-
     }
 
   }, [
     sistemaOffline,
-    ultimoCambio
+    ultimoHeartbeat
   ]);
 
-
-  // ==========================================
-  // Recuperar fecha del fallo
-  // ==========================================
 
   const fechaFalloSistema =
     Number(
@@ -390,136 +315,9 @@ export function useSistemaOffline() {
   return {
     sistemaOffline,
     fechaFalloSistema,
-    ultimoCambio,
+    ultimoHeartbeat,
   };
 }
-
-// export function useSistemaOffline() {
-
-//   const { Variables } = useVariables();
-
-//   const ultimoValorRef = useRef<string | undefined>(undefined);
-
-//   const inicializadoRef = useRef(false);
-
-//   const [ultimoCambio, setUltimoCambio] = useState(() => {
-
-//     const guardado =
-//       localStorage.getItem("ultimoCambioSistema");
-
-//     return guardado
-//       ? Number(guardado)
-//       : Date.now();
-
-//   });
-
-//   const [ahora, setAhora] = useState(Date.now());
-
-
-
-//   // Actualizar reloj cada segundo
-//   useEffect(() => {
-
-//     const interval = setInterval(() => {
-//       setAhora(Date.now());
-//     }, 1000);
-
-//     return () => clearInterval(interval);
-
-//   }, []);
-
-
-
-//   // Detectar nuevos envíos de la unidad central
-//   useEffect(() => {
-
-//     const valorActual =
-//       Variables?.Estado_Sistema?.Ultimo_Envio_Sensores;
-
-//     if (!valorActual) return;
-
-//     // Primera carga de datos:
-//     // NO actualizar ultimoCambio porque podría venir restaurado
-//     // desde localStorage.
-//     if (!inicializadoRef.current) {
-
-//       ultimoValorRef.current = valorActual;
-//       inicializadoRef.current = true;
-
-//       return;
-
-//     }
-
-//     // Cambio real detectado
-//     if (valorActual !== ultimoValorRef.current) {
-
-//       ultimoValorRef.current = valorActual;
-
-//       const timestamp = Date.now();
-
-//       setUltimoCambio(timestamp);
-
-//       localStorage.setItem(
-//         "ultimoCambioSistema",
-//         String(timestamp)
-//       );
-
-//     }
-
-//   }, [Variables?.Estado_Sistema?.Ultimo_Envio_Sensores]);
-
-
-
-//   const sistemaOffline =
-//     ahora - ultimoCambio > 900000;
-
-
-
-//   // Guardar momento exacto del fallo
-//   useEffect(() => {
-
-//     const fechaGuardada =
-//       localStorage.getItem("fechaFalloSistema");
-
-//     if (
-//       sistemaOffline &&
-//       fechaGuardada === null
-//     ) {
-
-//       localStorage.setItem(
-//         "fechaFalloSistema",
-//         String(ultimoCambio + 900000) // 15 minutos después del último cambio
-//       );
-
-//     }
-
-//     if (!sistemaOffline) {
-
-//       localStorage.removeItem(
-//         "fechaFalloSistema"
-//       );
-
-//     }
-
-//   }, [sistemaOffline, ultimoCambio]);
-
-
-
-//   const fechaFalloSistema =
-//     Number(
-//       localStorage.getItem(
-//         "fechaFalloSistema"
-//       )
-//     ) || null;
-
-
-
-//   return {
-//     sistemaOffline,
-//     fechaFalloSistema,
-//     ultimoCambio,
-//   };
-// }
 
 export async function ObtenerAvisos() {
 
