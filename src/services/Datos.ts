@@ -267,7 +267,7 @@ export function useSistemaOffline() {
   // Más de 60 segundos sin un nuevo envío
   const sistemaOffline =
     ultimoHeartbeat !== null &&
-    ahora - ultimoHeartbeat > 60000;
+    ahora - ultimoHeartbeat > 300000;
 
 
   // Registrar momento del fallo
@@ -281,7 +281,7 @@ export function useSistemaOffline() {
     ) {
 
       const fechaFallo =
-        ultimoHeartbeat! + 60000;
+        ultimoHeartbeat! + 300000;
 
       localStorage.setItem(
         "fechaFalloSistema",
