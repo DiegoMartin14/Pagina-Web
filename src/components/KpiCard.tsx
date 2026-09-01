@@ -51,10 +51,10 @@ export function KpiCard({ label, subtitle, value, unit, icon: Icon, accent = "ye
           ) : (
             <TrendingDown className="h-3.5 w-3.5 text-destructive" />
           )}
-          <span className={cn("font-medium tabular-nums", trend >= 0 ? "text-success" : "text-destructive")}>
+          {/* <span className={cn("font-medium tabular-nums", trend >= 0 ? "text-success" : "text-destructive")}>
             {trend >= 0 ? "+" : ""}
             {trend.toFixed(1)}%
-          </span>
+          </span> */}
           <span className="text-muted-foreground">vs ayer</span>
         </div>
       )}
