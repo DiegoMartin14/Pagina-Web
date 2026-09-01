@@ -47,9 +47,9 @@ export function KpiCard({ label, subtitle, value, unit, icon: Icon, accent = "ye
       {typeof trend === "number" && (
         <div className="mt-4 flex items-center gap-1.5 text-xs">
           {trend >= 0 ? (
-            <TrendingUp className="h-3.5 w-3.5 text-success" />
+            <TrendingUp className="h-5.5 w-5.5 text-success" />
           ) : (
-            <TrendingDown className="h-3.5 w-3.5 text-destructive" />
+            <TrendingDown className="h-5.5 w-5.5 text-destructive" />
           )}
           {/* <span className={cn("font-medium tabular-nums", trend >= 0 ? "text-success" : "text-destructive")}>
             {trend >= 0 ? "+" : ""}
