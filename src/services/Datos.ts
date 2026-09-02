@@ -630,9 +630,9 @@ export function CrearAlertas(
     alertas.push({
       id: "Corriente",
       severity: "fault",
-      title: "Corriente elevada",
+      title: "Posible cortocircuito",
       description:
-        "La corriente de trabajo supero a la de cortocircuito.",
+        "Se han identificado comportamientos raros en la corriente y tensión.",
       tiempo: avisos.Corriente.Tiempo,  
     });
   }
@@ -654,7 +654,7 @@ export function CrearAlertas(
       severity: "fault",
       title: "Posible circuito abierto",
       description:
-        "La tensión se encuentra por encima de la de circuito abierto.",
+        "Se han identificado comportamientos raros en la tensión y corriente.",
       tiempo: avisos.Tension.Tiempo,
     });
   }
