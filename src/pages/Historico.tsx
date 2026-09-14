@@ -55,7 +55,7 @@ export default function Historico() {
         <KpiCard label="Energía en la semana" value={Variables.Energia_En_La_Sem} unit="kWh" icon={Battery} accent="yellow" />
         <KpiCard label={etiquetaDinamica} value={Variables.Energia_Prom_Diario} unit="Wh" icon={CalendarDays} accent="cyan"  />
         <KpiCard label="Mejor día" value={Variables.Mejor_Dia} unit="Wh" icon={Trophy} accent="green" />
-        <KpiCard label="Eficiencia en la semana" value={Variables.Eficiencia_En_La_Sem} unit="%" icon={Activity} accent="blue" />
+        <KpiCard label="Eficiencia promedio en la semana" value={Variables.Eficiencia_En_La_Sem.toFixed(2)} unit="%" icon={Activity} accent="blue" />
       </section>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">

@@ -143,8 +143,8 @@ export default function Configuracion() {
     unit?: string;
     step?: number;
   }[] = [
-      { key: "Isc", label: "ICC (corriente de corto)", unit: "A", step: 0.01 },
-      { key: "Voc", label: "VCA (tensión circuito abierto)", unit: "V", step: 0.01 },
+      { key: "Isc", label: "ICC (corriente de cortocircuito)", unit: "A", step: 0.01 },
+      { key: "Voc", label: "VCC (tensión circuito abierto)", unit: "V", step: 0.01 },
       { key: "Imp", label: "Corriente máx. potencia (Imp)", unit: "A", step: 0.01 },
       { key: "Vmp", label: "Tensión máx. potencia (Vmp)", unit: "V", step: 0.01 },
       { key: "Ns", label: "Número de celdas", step: 1 },
